@@ -1,0 +1,82 @@
+
+
+.mat-mdc-form-field-subscript-wrapper {
+  height: 0;
+}
+
+
+h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: black;
+    letter-spacing: -0.2px;
+    margin-left: 2%;
+  }
+
+  ul {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    width: 31%;
+    gap: 30px;
+    list-style-type: none;
+ 
+  }
+
+li {
+    font-weight: 400;
+    border-bottom: 2px solid transparent;
+    color: black;
+
+    }
+
+
+li.active a {
+  border-bottom: 2px solid black; 
+}
+
+
+
+  div {
+    font-family: 'DM Sans', sans-serif;
+  }
+
+
+  a {
+    text-decoration: none;
+    color: black;
+  }
+
+  a.visited  {
+    color: black; 
+  }
+
+  table {
+    width: 95%;
+    border-collapse: collapse;
+  }
+
+  
+  td {
+    text-align: center;
+    border-bottom: 1px solid black;
+    border-top: 1px solid black;
+  }
+ .items {
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+ }
+ 
+ .categoriesIcons {
+    border-bottom: 1px solid black;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+ }
+
+
+.calendar-th {
+  display: flex;
+  flex-direction: row;
+}
+

@@ -1,0 +1,56 @@
+<div class="upload-container">
+  <span class="close" (click)="closeAddForm()"><i class="fa-solid fa-xmark crossIcn"></i></span>
+    <form  class="formBloc" [formGroup]="uploadFileForm" (ngSubmit)="onSubmit()">
+      <div class="formFields">
+      <div class="formField">
+        <label for="fileType">Type de fichier:</label>
+        <select id="fileType" formControlName="fileType">
+          <option value="" disabled selected> Facture/Fiche</option>
+          <option value="Facture">Facture</option>
+          <option value="Fiche">Fiche</option>
+        </select>
+        <div *ngIf="uploadFileForm.get('fileType')?.invalid && uploadFileForm.get('fileType')?.touched">
+          Type de fichier requis
+        </div>
+      </div>
+  
+      <div  class="formField">
+        <label for="agenceCode">Code Agence:</label>
+        <input id="agenceCode" formControlName="agenceCode" type="text" placeholder="Code Agence" />
+        <div *ngIf="uploadFileForm.get('agenceCode')?.invalid && uploadFileForm.get('agenceCode')?.touched">
+          Code Agence requis
+        </div>
+      </div>
+  
+      <div  class="formField">
+        <label for="dateFile">Date du fichier:</label>
+        <input id="dateFile" formControlName="dateFile" type="date" />
+        <div *ngIf="uploadFileForm.get('dateFile')?.invalid && uploadFileForm.get('dateFile')?.touched">
+          Date du fichier requise
+        </div>
+      </div>
+  
+      <div  class="formField">
+        <label for="tiersName">Nom du tiers:</label>
+        <input id="tiersName" formControlName="tiersName" type="text" placeholder="Nom du tiers" />
+        <div *ngIf="uploadFileForm.get('tiersName')?.invalid && uploadFileForm.get('tiersName')?.touched">
+          Nom du tiers requis 
+        </div>
+      </div>
+  
+      <div class="fileInput formField">
+        <label >Sélectionner un fichier:</label>
+        <label for="file" class="custom-file-upload"><i class="fa-solid fa-download"></i> Votre fichier</label>
+        <input id="file" type="file" hidden (change)="onFileChange($event)" />
+        <div *ngIf="!fileToUpload && uploadFileForm.get('file')?.touched">
+          Fichier requis
+        </div>
+      </div>
+  
+      <button class="uploadBtn" type="submit" [disabled]="uploadFileForm.invalid || !fileToUpload">Envoyer</button>
+    </div>
+    </form>
+
+   
+  </div>
+  

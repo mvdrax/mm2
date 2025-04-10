@@ -1,0 +1,103 @@
+.upload-container {
+    display: flex;
+    justify-content: center;
+    background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  transform: scale(1);
+  animation: scaleIn 0.2s ease-out;
+  width: 30%;
+  flex-direction: column;
+}
+
+.fileInput {
+    display: flex;
+    flex-direction: column;
+}
+
+div {
+    font-family: 'DM Sans', sans-serif;
+  }
+
+
+  @keyframes scaleIn {
+    from {
+      transform: scale(0.5);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+
+
+.upload-container.closing {
+    animation: scaleOut 0.3s ease-in-out forwards;
+  } 
+
+  @keyframes scaleOut {
+    from {
+      transform: scale(1);
+    }
+    to {
+      transform: scale(0.1);
+    }
+  }
+
+
+  .crossIcn {
+    border: 2px solid grey;
+    padding-left: 3px;
+    padding-right: 3px;
+    border-radius: 90px;
+    cursor: pointer;
+  }
+
+
+
+
+  .formField {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    gap: 2px;
+    width: 60%;
+  }
+
+  .formFields {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+    gap: 5px;
+  }
+
+
+  input,
+  select {
+  border: 2px solid orange;
+  border-radius: 6px;
+  font-style: italic;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+
+.custom-file-upload {
+    display: flex ;
+    cursor: pointer;
+    background-color: #ffcc00;
+    width: 40%;
+    padding: 4px;
+    border: 1px solid #ffcc00;
+    border-radius: 20px;
+}
+
+.uploadBtn {
+        border: 2px solid #ffcc00;
+        background-color: #ffcc00;
+        border-radius: 10px;
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        padding: 2px;
+        cursor: pointer;
+}
