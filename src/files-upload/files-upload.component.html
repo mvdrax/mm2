@@ -1,218 +1,119 @@
+<!-- Selecteur d'agence -->
+<select [(ngModel)]="selectedAgence" (change)="agenceChanging(selectedAgence)">
+  <option *ngFor="let agence of listAgences" [value]="agence">
+    {{ agence }}
+  </option>
+</select>
 
+<h2>Archives</h2>
 
+<!-- Tabs -->
+<ul class="nav nav-tabs">
+  <li [ngClass]="{ active: tab === 1 }" (click)="onTabChange(1)">
+    <a href="#">Factures</a>
+  </li>
+  <li [ngClass]="{ active: tab === 2 }" (click)="onTabChange(2)">
+    <a href="#">Fiches de paie</a>
+  </li>
+</ul>
 
-  
-    <!--<mat-form-field>
-       <mat-select
-        [(value)]="currentAgency"
-        (selectionChange)="onValueChanged($event.value)"
-      >
-        @for (agency of authenticationService.getUserAgencyList(); track agency) {
-        <mat-option [value]="agency"
-          >{{ agency.name }} ({{ agency.numDep }})</mat-option
-        >
-        }
-      </mat-select>
-    </mat-form-field> -->
-  
- 
-  
+<div [ngSwitch]="tab">
+<div *ngSwitchCase="1" class="tables">
+  <table>
+    <thead>
+      <tr class="categories">
+        <th>Entreprise</th>
+        <th>Période</th>
+        <th>Facture</th>
+      </tr>
+      <tr class="categoriesIcons">
+        <th>
+          <button (click)="filteredSearch('Fact')">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+          <input
+            class="search-bar"
+            [(ngModel)]="searchQueryFactures"
+            (input)="filteredSearch('Fact')"
+            type="text"
+            placeholder="Recherche"
+          />
+        </th>
 
-   
-    <div>
-
-      <div>
-        <!--<mat-form-field>
-           <mat-select
-            [(value)]="currentAgency"
-            (selectionChange)="onValueChanged($event.value)"
-          >
-            @for (agency of authenticationService.getUserAgencyList(); track agency) {
-            <mat-option [value]="agency"
-              >{{ agency.name }} ({{ agency.numDep }})</mat-option
-            >
-            }
-          </mat-select>
-        </mat-form-field> -->
-      </div>
-     
-      <select [(ngModel)]="selectedAgence" (change)="agenceChanging(selectedAgence)">
-        
-          <option *ngFor="let agence of listAgences" [value]="agence">{{ agence }}</option>
-        
-      </select>
-
-      
-  
-  
-  
-  
-   
-        <h2>Archives</h2>
-    
-        <ul class="nav nav-tabs">
-          <li [ngClass]="{active: tab==1}" (click)="onTabChange(1)"><a href="#">Factures</a></li>
-          <li [ngClass]="{active: tab==2}" (click)="onTabChange(2)"><a href="#">Fiches de paie</a></li>
+        <th>
+          <mat-form-field appearance="fill" class="month-filter">
+            
+            <select matNativeControl [(ngModel)]="selectedMonthYear" (change)="onMonthYearChange()">
+              <option value="">-- Tous les mois --</option>
+              <option *ngFor="let option of monthYearOptions" [value]="option">{{ option }}</option>
+            </select>
+          </mat-form-field>
           
-        </ul>
-    
-    
-    <div [ngSwitch]="tab">
-      <div *ngSwitchCase="1" class="tables">
-        <table>
-          <thead>
-            <tr class="categories">
-              <th>Entreprise</th>
-              <th>Période</th>
-              <th>Facture</th>
-            </tr>
-            <tr class="categoriesIcons">
-              <th> <button (click)="filteredSearch(tab === 1 ? 'Fact' : 'Fiche')">
-                <i class="fa-solid fa-magnifying-glass"></i>
-              </button>
-              
-              <input class="search-bar" [(ngModel)]="searchQueryFactures" (input)="filteredSearch('Fact')"  type="text" placeholder="Recherche " />
-              
-              </th>
-    
-              <th>
-                <div class="calendar-filter">
-                  <mat-form-field appearance="fill" subscriptSizing="dynamic">
-                    <mat-label></mat-label>
-                      <input matInput [matDatepicker]="startPickerFactures" [(ngModel)]="startDateFactures" /> <!-- matInput : Directive Angular Material qui applique un style au champ de saisie.
-                      [matDatepicker]="startPicker" : Lier cet input au composant calendrier identifié par #startPicker.
-                      [(ngModel)]="startDate" : Bind bidirectionnel pour stocker la date sélectionnée dans la variable startDate (définie dans le fichier TypeScript). -->
-                      <mat-datepicker-toggle matSuffix [for]="startPickerFactures"> <!-- mat-datepicker-toggle : Composant qui affiche une icône de calendrier à droite du 
-                        champ.matSuffix : Place l'icône à la fin du champ.
-                        [for]="startPicker" : Lien avec le calendrier identifié par #startPicker.-->
-                         </mat-datepicker-toggle>
-                        <mat-datepicker #startPickerFactures>
-                       <!--mat-datepicker : Composant calendrier Angular Material. L'utilisateur peut sélectionner une date.
-                        #startPicker : Identifiant utilisé pour connecter le calendrier au champ de saisie.-->
-                      </mat-datepicker>
-                  </mat-form-field>
-                  <mat-form-field appearance="fill">
-                    <mat-label>Fin</mat-label>
-                    <input matInput [matDatepicker]="endPickerFactures" [(ngModel)]="endDateFactures" />
-                    <mat-datepicker-toggle matSuffix [for]="endPickerFactures"></mat-datepicker-toggle>
-                    <mat-datepicker #endPickerFactures></mat-datepicker>
-                  </mat-form-field>              
-                  
-                  
-                  
-                  <button class="calBtn" mat-raised-button color="primary" (click)="applyDateFilter('Fact')">
-                <i class="fa-regular fa-calendar"></i></button>
-                <button class="reinitCalBtn" mat-raised-button color="primary" (click)="resetDatesFact()">
-                  </button>
-              </div> 
-            </th>
-              <th><i class="fa-solid fa-file-arrow-down"></i></th>
-            </tr>
-          </thead>
-    
-          <tbody>
-            <tr *ngFor="let item of mergedList" class="items">
-              <td>{{ item.tiersName }}</td>
-              <td>{{ item.dateFile | date:'dd.MM.yyyy' }}</td>
-              <td class="btnsDandU">
-                <a class="btnDandU" [href]="getBlobUrl(item.docFile)" target="_blank">Ouvrir  </a>
-                <a class="btnDandU" [href]="getBlobUrl(item.docFile)" download="document.pdf" target="_blank">  Télécharger</a>
-               
+        </th>
+        <th><i class="fa-solid fa-file-arrow-down"></i></th>
+      </tr>
+    </thead>
 
-              </td>
-            </tr>
-          </tbody>
-        </table>
-    
-      </div>
-    </div>
-    
-    
-    
-    <div [ngSwitch]="tab">
-      <div *ngSwitchCase="2" class="tables">
-        <table>
-          <thead>
-            <tr class="categories">
-              <th>Intérimaire</th>
-              <th>Période</th>
-              <th>Fiche de paie</th>
-            </tr>
-            <tr class="categoriesIcons">
-              <th> <button (click)="filteredSearch(tab === 1 ? 'Fact' : 'Fiche')">
-                <i class="fa-solid fa-magnifying-glass"></i>
-              </button>
-              <div class="search-bar"><input [(ngModel)]="searchQueryFiches" type="text" placeholder="Recherche " /></div>
-              </th>
-              <th class="calendar-th">
-                <div class="calendar-filter">
-                  <mat-form-field appearance="fill">
-                    <mat-label></mat-label>
-                      <input matInput [matDatepicker]="startPickerFiches" [(ngModel)]="startDateFiches" /> <!-- matInput : Directive Angular Material qui applique un style au champ de saisie.
-                      [matDatepicker]="startPicker" : Lier cet input au composant calendrier identifié par #startPicker.
-                      [(ngModel)]="startDate" : Bind bidirectionnel pour stocker la date sélectionnée dans la variable startDate (définie dans le fichier TypeScript). -->
-                      <mat-datepicker-toggle matSuffix [for]="startPickerFiches"> <!-- mat-datepicker-toggle : Composant qui affiche une icône de calendrier à droite du 
-                        champ.matSuffix : Place l'icône à la fin du champ.
-                        [for]="startPicker" : Lien avec le calendrier identifié par #startPicker.-->
-                         </mat-datepicker-toggle>
-                        <mat-datepicker #startPickerFiches>
-                       <!--mat-datepicker : Composant calendrier Angular Material. L'utilisateur peut sélectionner une date.
-                        #startPicker : Identifiant utilisé pour connecter le calendrier au champ de saisie.-->
-                      </mat-datepicker>
-                  </mat-form-field>
-                  <mat-form-field appearance="fill">
-                    <mat-label>Fin</mat-label>
-                    <input matInput [matDatepicker]="endPickerFiches" [(ngModel)]="endDateFiches" />
-                    <mat-datepicker-toggle matSuffix [for]="endPickerFiches"></mat-datepicker-toggle>
-                    <mat-datepicker #endPickerFiches></mat-datepicker>
-                  </mat-form-field>              
-                  
-                  
-                  
-                  <button  class="calBtn" mat-raised-button color="primary" (click)="applyDateFilter('Fiche')">
-                <i class="fa-regular fa-calendar"></i></button>
-                <button class="reinitCalBtn" mat-raised-button color="primary" (click)="resetDatesFiches()">
-                </button>
-              </div> 
-            </th>
-              <th><i class="fa-solid fa-file-arrow-down"></i></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let item of mergedList" class="items">
-              <td>{{ item.tiersName }}</td>
-              <td>{{ item.dateFile | date:'dd.MM.yyyy' }}</td>
-              <td class="btnsDandU " >
-                <a class="btnDandU" [href]="getBlobUrl(item.docFile)" target="_blank">Ouvrir</a>
-                <a class="btnDandU" [href]="getBlobUrl(item.docFile)" download="document.pdf" target="_blank">  Télécharger</a>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      
-      </div>
-      </div>
-      
-       <div class="addBtnDiv">
-       <button  class="addBtn" (click)="openAddForm()">Ajouter</button></div>
-       <app-upload-file-user *ngIf="isFormOpen" (closePopupEvent)="closeAddForm()"   (fileUploaded)="onFileUploaded($event)" ></app-upload-file-user>
-      </div>
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
+    <tbody>
+      <tr *ngFor="let item of newFilteredList" class="items">
+        <td>{{ item.tiersName }}</td>
+        <td>{{ item.dateFile | date: 'dd.MM.yyyy' }}</td>
+        <td class="btnsDandU">
+          <a class="btnDandU" [href]="getBlobUrl(item.docFile)" target="_blank">Ouvrir</a>
+          <a class="btnDandU"
+   href="#"
+   (click)="openPdf(item.docFile); $event.preventDefault()">
+   Ouvrir
+</a>
+          <a class="btnDandU" [href]="getBlobUrl(item.docFile)" [attr.download]="item.tiersName + item.date + '.pdf'" target="_blank">Télécharger</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Onglet Fiches de paie -->
+<div *ngSwitchCase="2" class="tables">
+  <table>
+    <thead>
+      <tr class="categories">
+        <th>Intérimaire</th>
+        <th>Période</th>
+        <th>Fiche de paie</th>
+      </tr>
+      <tr class="categoriesIcons">
+        <th>
+          <button (click)="filteredSearch('Paie')">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+          <div class="search-bar">
+            <input [(ngModel)]="searchQueryFiches" (input)="filteredSearch('Paie')" type="text" placeholder="Recherche" />
+          </div>
+        </th>
+        <th>
+          <mat-form-field appearance="fill" class="month-filter">
+            <mat-label>Trier par mois</mat-label>
+            <select matNativeControl [(ngModel)]="selectedMonthYear" (change)="onMonthYearChange()">
+              <option value="">-- Tous les mois --</option>
+              <option *ngFor="let option of monthYearOptions" [value]="option">{{ option }}</option>
+            </select>
+          </mat-form-field>
+          
+        </th>
+        <th><i class="fa-solid fa-file-arrow-down"></i></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let item of newFilteredList" class="items">
+        <td>{{ item.tiersName }}</td>
+        <td>{{ item.dateFile | date: 'dd.MM.yyyy' }}</td>
+        <td class="btnsDandU">
+          <a class="btnDandU" [href]="getBlobUrl(item.docFile)" target="_blank">Ouvrir</a>
+          <a class="btnDandU" [href]="getBlobUrl(item.docFile)" download="document.pdf" target="_blank">Télécharger</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</div>
