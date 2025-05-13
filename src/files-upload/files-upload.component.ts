@@ -53,10 +53,8 @@ export class FilesUploadComponent {
 
   blobUrls: { [key: string]: string } = {};
 
-
-
-  
-
+  selectedMonthYear: string = '';
+  monthYearOptions: string[] = [];
 
   constructor(private pdfFilesService: FileService, private cdr: ChangeDetectorRef) {}
 
@@ -75,12 +73,9 @@ export class FilesUploadComponent {
   loadingFilesByAgency(agence: string) {
     this.pdfFilesService.getPdfFilesByAgency(agence).subscribe(data => {
       this.filesListByAgency = data;
-      this.filterFilesByTab();
-
+      this.applyAllFilters();
       this.generateMonthYearOptions();
 
-
-      // Met à jour les blobUrls
       this.blobUrls = {};
       this.filesListByAgency.forEach(item => {
         if (item.docFile) {
@@ -100,19 +95,9 @@ export class FilesUploadComponent {
 
   onTabChange(tab: number) {
     this.tab = tab;
-    this.filterFilesByTab();
-
-    this.generateMonthYearOptions();
-
     this.selectedMonthYear = '';
-  }
-
-  filterFilesByTab() {
-    if (this.tab === 1) {
-      this.newFilteredList = this.filesListByAgency.filter(item => item.fileType === 'Fact');
-    } else if (this.tab === 2) {
-      this.newFilteredList = this.filesListByAgency.filter(item => item.fileType === 'Paie');
-    }
+    this.applyAllFilters();
+    this.generateMonthYearOptions();
   }
 
   getBlobUrl(docFile: string): string {
@@ -136,90 +121,39 @@ export class FilesUploadComponent {
     }
   }
 
-
- /* openPdf(docFile: string, filename: string): void {
-    const urlBlob = this.getBlobUrl(docFile);
-    const newWin = window.open(urlBlob, '_blank');
-    newWin.document.title = filename;
-    newWin.document.body.innerHTML = `
-      <iframe width="100%" height="100%" src="${urlBlob}" frameborder="0"></iframe>
-    `;
-  }*/
-
   filteredSearch(fileType: string) {
-
-    const filteredListByType = this.filesListByAgency.filter(item => item.fileType === fileType);
-    console.log('recherche', filteredListByType)
-
-    if (fileType === 'Fact') {
-      this.newFilteredList = !this.searchQueryFactures
-        ? filteredListByType
-        : filteredListByType.filter(item =>
-            item.tiersName.toLowerCase().includes(this.searchQueryFactures.toLowerCase())
-          );
-
-          console.log('results sear', this.newFilteredList)
-    } else if (fileType === 'Paie') {
-      this.newFilteredList = !this.searchQueryFiches
-        ? filteredListByType
-        : filteredListByType.filter(item =>
-            item.tiersName.toLowerCase().includes(this.searchQueryFiches.toLowerCase())
-          );
-    }
-
-    this.cdr.detectChanges();
+    this.applyAllFilters();
   }
 
   applyDateFilter(fileType: string) {
-    if (fileType === 'Fact') {
-      if (this.startDateFactures && this.endDateFactures) {
-        if (this.startDateFactures > this.endDateFactures) {
-          alert("Dates non conformes");
-          return;
-        }
-
-        this.newFilteredList = this.filesListByAgency.filter(item => {
-          const itemDate = new Date(item.dateFile);
-          return (
-            item.fileType === 'Fact' &&
-            itemDate >= this.startDateFactures! &&
-            itemDate <= this.endDateFactures!
-          );
-        });
-      } else {
-        alert("Champ vide");
+    if (fileType === 'Fact' && this.startDateFactures && this.endDateFactures) {
+      if (this.startDateFactures > this.endDateFactures) {
+        alert("Dates non conformes");
+        return;
       }
-    } else if (fileType === 'Fiche') {
-      if (this.startDateFiches && this.endDateFiches) {
-        if (this.startDateFiches > this.endDateFiches) {
-          alert("Dates non conformes");
-          return;
-        }
-
-        this.newFilteredList = this.filesListByAgency.filter(item => {
-          const itemDate = new Date(item.dateFile);
-          return (
-            item.fileType === 'Fiche' &&
-            itemDate >= this.startDateFiches! &&
-            itemDate <= this.endDateFiches!
-          );
-        });
-      } else {
-        alert('Veuillez sélectionner les deux dates pour les fiches de paie !');
+    } else if (fileType === 'Fiche' && this.startDateFiches && this.endDateFiches) {
+      if (this.startDateFiches > this.endDateFiches) {
+        alert("Dates non conformes");
+        return;
       }
+    } else {
+      alert("Champ vide");
+      return;
     }
+
+    this.applyAllFilters();
   }
 
   resetDatesFact() {
     this.startDateFactures = null;
     this.endDateFactures = null;
-    this.filterFilesByTab();
+    this.applyAllFilters();
   }
 
   resetDatesFiches() {
     this.startDateFiches = null;
     this.endDateFiches = null;
-    this.filterFilesByTab();
+    this.applyAllFilters();
   }
 
   toggleAgences() {
@@ -231,52 +165,60 @@ export class FilesUploadComponent {
       });
     }
   }
-// Pour la sélection du mois/année
 
+  generateMonthYearOptions(): void {
+    const uniqueMonthYears = new Set<string>();
+    this.filesListByAgency.forEach(file => {
+      if (file.fileType === (this.tab === 1 ? 'Fact' : 'Paie')) {
+        const date = new Date(file.dateFile);
+        const monthYear = `${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
+        uniqueMonthYears.add(monthYear);
+      }
+    });
 
-selectedMonthYear: string = '';
-monthYearOptions: string[] = [];
-
-generateMonthYearOptions(): void {
- // const factures = this.filesListByAgency.filter(item => item.fileType === 'Fact');
-
-  const uniqueMonthYears = new Set<string>();
-  this.newFilteredList.forEach(fact => {
-    const date = new Date(fact.dateFile);
-    const monthYear = `${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
-    uniqueMonthYears.add(monthYear);
-  });
-
-  this.monthYearOptions = Array.from(uniqueMonthYears).sort((a, b) => {
-    const [monthA, yearA] = a.split('/').map(Number);
-    const [monthB, yearB] = b.split('/').map(Number);
-    return yearB - yearA || monthB - monthA;
-  });
-}
-
-onMonthYearChange(): void {
-  if (!this.selectedMonthYear) {
-    this.filterFilesByTab(); 
-    return;
+    this.monthYearOptions = Array.from(uniqueMonthYears).sort((a, b) => {
+      const [monthA, yearA] = a.split('/').map(Number);
+      const [monthB, yearB] = b.split('/').map(Number);
+      return yearB - yearA || monthB - monthA;
+    });
   }
 
-  const [selectedMonth, selectedYear] = this.selectedMonthYear.split('/').map(Number);
+  onMonthYearChange(): void {
+    this.applyAllFilters();
+  }
 
-  const currentTabFileType = this.tab === 1 ? 'Fact' : 'Paie';
+  applyAllFilters() {
+    const currentFileType = this.tab === 1 ? 'Fact' : 'Paie';
+    const query = currentFileType === 'Fact' ? this.searchQueryFactures : this.searchQueryFiches;
+    const startDate = currentFileType === 'Fact' ? this.startDateFactures : this.startDateFiches;
+    const endDate = currentFileType === 'Fact' ? this.endDateFactures : this.endDateFiches;
 
-  this.newFilteredList = this.filesListByAgency.filter(item => {
-    const itemDate = new Date(item.dateFile);
-    return (
-      item.fileType === currentTabFileType  &&
-      itemDate.getMonth() + 1 === selectedMonth &&
-      itemDate.getFullYear() === selectedYear
+    this.newFilteredList = this.filesListByAgency.filter(item => {
+      if (item.fileType !== currentFileType) return false;
 
-        
+      if (query && !item.tiersName.toLowerCase().includes(query.toLowerCase())) {
+        return false;
+      }
 
-    );
-  });
-}
+      if (startDate && endDate) {
+        const itemDate = new Date(item.dateFile);
+        if (itemDate < startDate || itemDate > endDate) {
+          return false;
+        }
+      }
 
+      if (this.selectedMonthYear) {
+        const [month, year] = this.selectedMonthYear.split('/').map(Number);
+        const itemDate = new Date(item.dateFile);
+        if (itemDate.getMonth() + 1 !== month || itemDate.getFullYear() !== year) {
+          return false;
+        }
+      }
 
+      return true;
+    });
+
+    this.cdr.detectChanges();
+  }
 
 }
